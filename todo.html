@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Advanced To-Do List</title>
+  <style>
+    :root {
+      --primary-color: #6366f1;
+      --accent-color: #22d3ee;
+      --bg-color: #111827;
+      --text-color: #f9fafb;
+      --card-bg: #1f2937;
+      --card-shadow: rgba(0, 0, 0, 0.5);
+      --glow: 0 0 10px var(--accent-color);
+    }
+
+    body {
+      margin: 0;
+      font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+      background-color: var(--bg-color);
+      color: var(--text-color);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+    }
+
+    .container {
+      background-color: var(--card-bg);
+      box-shadow: 0 8px 16px var(--card-shadow);
+      padding: 2rem;
+      border-radius: 1rem;
+      width: 90%;
+      max-width: 700px;
+    }
+
+    h1 {
+      text-align: center;
+      color: var(--accent-color);
+      margin-bottom: 1.5rem;
+      font-size: 2.5rem;
+      font-weight: bold;
+      text-shadow: 0 0 10px var(--accent-color);
+    }
+
+    .task-input {
+      display: flex;
+      gap: 1rem;
+      flex-wrap: wrap;
+      margin-bottom: 1rem;
+    }
+
+    .task-input input[type="text"], .task-input input[type="datetime-local"] {
+      flex: 1;
+      padding: 0.75rem;
+      border: 2px solid var(--primary-color);
+      border-radius: 0.5rem;
+      outline: none;
+      background-color: #374151;
+      color: var(--text-color);
+    }
+
+    .task-input input:focus {
+      border-color: var(--accent-color);
+      box-shadow: var(--glow);
+    }
+
+    .task-input button {
+      background-color: var(--primary-color);
+      color: #fff;
+      border: none;
+      padding: 0.75rem 1rem;
+      border-radius: 0.5rem;
+      cursor: pointer;
+      transition: 0.3s ease;
+    }
+
+    .task-input button:hover {
+      background-color: var(--accent-color);
+      box-shadow: var(--glow);
+    }
+
+    ul {
+      list-style: none;
+      padding: 0;
+      margin-top: 1rem;
+    }
+
+    li {
+      background: #374151;
+      margin-bottom: 0.75rem;
+      padding: 0.75rem 1rem;
+      border-radius: 0.5rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      transition: background 0.3s ease, box-shadow 0.3s ease;
+    }
+
+    li:hover {
+      background: #4b5563;
+      box-shadow: var(--glow);
+    }
+
+    li.completed span {
+      text-decoration: line-through;
+      color: gray;
+    }
+
+    .task-info {
+      flex: 1;
+    }
+
+    .datetime {
+      font-size: 0.8rem;
+      color: #9ca3af;
+    }
+
+    .actions button {
+      margin-left: 0.5rem;
+      border: none;
+      padding: 0.5rem;
+      border-radius: 0.4rem;
+      cursor: pointer;
+      transition: background-color 0.2s ease, box-shadow 0.2s ease;
+    }
+
+    .actions .edit {
+      background-color: #fbbf24;
+      color: #fff;
+    }
+
+    .actions .edit:hover {
+      background-color: #f59e0b;
+      box-shadow: var(--glow);
+    }
+
+    .actions .delete {
+      background-color: #ef4444;
+      color: #fff;
+    }
+
+    .actions .delete:hover {
+      background-color: #dc2626;
+      box-shadow: var(--glow);
+    }
+
+    .actions .complete {
+      background-color: #10b981;
+      color: #fff;
+    }
+
+    .actions .complete:hover {
+      background-color: #059669;
+      box-shadow: var(--glow);
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>To-Do List</h1>
+    <div class="task-input">
+      <input type="text" id="taskInput" placeholder="Add a new task..." />
+      <input type="datetime-local" id="taskDateTime" />
+      <button onclick="addTask()">Add</button>
+    </div>
+    <ul id="taskList"></ul>
+  </div>
+
+  <script>
+    function addTask() {
+      const taskInput = document.getElementById("taskInput");
+      const dateTimeInput = document.getElementById("taskDateTime");
+      const taskText = taskInput.value.trim();
+      const dateTime = dateTimeInput.value;
+      if (!taskText) return;
+
+      const taskItem = document.createElement("li");
+      taskItem.innerHTML = `
+        <div class="task-info">
+          <span>${taskText}</span><br>
+          <span class="datetime">${dateTime ? new Date(dateTime).toLocaleString() : ""}</span>
+        </div>
+        <div class="actions">
+          <button class="complete" onclick="toggleComplete(this)">✔</button>
+          <button class="edit" onclick="editTask(this)">✎</button>
+          <button class="delete" onclick="deleteTask(this)">🗑</button>
+        </div>
+      `;
+      document.getElementById("taskList").appendChild(taskItem);
+      taskInput.value = "";
+      dateTimeInput.value = "";
+    }
+
+    function deleteTask(button) {
+      button.parentElement.parentElement.remove();
+    }
+
+    function editTask(button) {
+      const taskItem = button.parentElement.parentElement;
+      const taskInfo = taskItem.querySelector(".task-info");
+      const span = taskInfo.querySelector("span");
+      const currentText = span.textContent;
+      const newText = prompt("Edit your task:", currentText);
+      if (newText !== null && newText.trim() !== "") {
+        span.textContent = newText.trim();
+      }
+    }
+
+    function toggleComplete(button) {
+      const taskItem = button.parentElement.parentElement;
+      taskItem.classList.toggle("completed");
+    }
+  </script>
+</body>
+</html>
